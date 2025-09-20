@@ -1,23 +1,28 @@
-version: "2"
 services:
-  geth:
-    image: ethereum/client-go
-    command: --datadir=/root/.ethereum/devchain --nodekeyhex=091bd6067cb4612df85d9c1ff85cc47f259ced4d4cd99816b14f35650f59c322 --http --http.addr=0.0.0.0 --http.api=personal,eth,net,web3 --http.corsdomain="*" --networkid=1234 --mine
-    volumes:
-      - ./files/password:/root/files/password:ro
-      - ./files/genesis.json:/root/files/genesis.json:ro
-      - ./files/keystore:/root/.ethereum/devchain/keystore:rw
-    ports:
-      - "30303:30303"
-      - "30303:30303/udp"
-      - "8545:8545"
   bootnode:
     image: ethereum/client-go
     command: bootnode --nodekeyhex="091bd6067cb4612df85d9c1ff85cc47f259ced4d4cd99816b14f35650f59c322" --verbosity=3
     ports:
       - "30301:30301/udp"
+
+  geth:
+    image: ethereum/client-go
+    command: >
+      geth --datadir=/root/.ethereum/devchain
+           --networkid=1234
+           --http --http.addr "0.0.0.0" --http.port 8545
+           --http.api "eth,net,web3,personal"
+           --bootnodes "enode://091bd6067cb4612df85d9c1ff85cc47f259ced4d4cd99816b14f35650f59c322@bootnode:30301"
+           --mine --allow-insecure-unlock
+    depends_on:
+      - bootnode
+    ports:
+      - "8545:8545"
+      - "30303:30303"
+      - "30303:30303/udp"
+
   netstats:
-    image: sammyne/eth-netstats
+    image: ethereumex/eth-netstats
     environment:
       - WS_SECRET=123
     ports:

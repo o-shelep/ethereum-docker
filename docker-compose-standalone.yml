@@ -2,7 +2,8 @@ services:
   bootnode:
     image: ethereum/client-go
     command: >
-      bootnode --nodekeyhex 091bd6067cb4612df85d9c1ff85cc47f259ced4d4cd99816b14f35650f59c322 --verbosity=3
+      --nodekeyhex 091bd6067cb4612df85d9c1ff85cc47f259ced4d4cd99816b14f35650f59c322
+      --verbosity=3
     ports:
       - "30301:30301/udp"
 
